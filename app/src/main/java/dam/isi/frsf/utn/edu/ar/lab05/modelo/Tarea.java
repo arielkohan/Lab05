@@ -12,6 +12,7 @@ public class Tarea {
     private Boolean finalizada;
     private Proyecto proyecto;
     private Prioridad prioridad;
+    private String descripcion;
     private Usuario responsable;
 
     public Tarea() {

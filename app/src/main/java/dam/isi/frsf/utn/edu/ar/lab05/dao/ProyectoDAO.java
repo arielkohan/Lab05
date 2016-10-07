@@ -107,5 +107,12 @@ public class ProyectoDAO {
         return null;
     }
 
-
+    public void actualizarMinutosTrabajados(Integer idTarea, Long minutosTrabajados){
+        //Establecemos los campos-valores a actualizar
+        ContentValues valores = new ContentValues();
+        valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS,minutosTrabajados);
+        SQLiteDatabase mydb =dbHelper.getWritableDatabase();
+        mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_id=?", new String[]{idTarea.toString()});
+        mydb.close();
+    }
 }

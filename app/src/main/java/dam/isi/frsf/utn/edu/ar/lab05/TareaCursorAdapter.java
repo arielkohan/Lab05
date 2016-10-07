@@ -15,6 +15,9 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
 
@@ -25,10 +28,12 @@ public class TareaCursorAdapter extends CursorAdapter {
     private LayoutInflater inflador;
     private ProyectoDAO myDao;
     private Context contexto;
+    private Map<Integer, Long> mapTiemposInicioTrabajo;
     public TareaCursorAdapter (Context contexto, Cursor c, ProyectoDAO dao) {
         super(contexto, c, false);
         myDao= dao;
         this.contexto = contexto;
+        mapTiemposInicioTrabajo = new HashMap<>();
     }
 
     @Override
@@ -60,7 +65,7 @@ public class TareaCursorAdapter extends CursorAdapter {
         Integer horasAsigandas = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS));
         tiempoAsignado.setText(horasAsigandas*60 + " minutos");
 
-        Integer minutosAsigandos = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS));
+        final Integer minutosAsigandos = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS));
         tiempoTrabajado.setText(minutosAsigandos+ " minutos");
         String p = cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaPrioridadMetadata.PRIORIDAD_ALIAS));
         prioridad.setText(p);
@@ -93,6 +98,23 @@ public class TareaCursorAdapter extends CursorAdapter {
                     }
                 });
                 backGroundUpdate.start();
+            }
+        });
+
+        btnEstado.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
+        btnEstado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Integer idTarea= (Integer) view.getTag();
+                if(((ToggleButton)view).isChecked()){
+                    mapTiemposInicioTrabajo.put(idTarea,System.currentTimeMillis());
+                }else{
+                    Long timesMillisFin = System.currentTimeMillis();
+                    Long timesMillisInicio = mapTiemposInicioTrabajo.get(idTarea);
+                    Long tiempoTrabajado =  minutosAsigandos + (timesMillisFin - timesMillisInicio) / 5000;
+                    myDao.actualizarMinutosTrabajados(idTarea,tiempoTrabajado);
+                    //TODO: Refrescar vista
+                }
             }
         });
     }
