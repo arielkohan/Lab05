@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
@@ -72,23 +73,58 @@ public class ProyectoDAO {
     }
 
     public void nuevaTarea(Tarea t){
+        ContentValues newTarea = new ContentValues();
+        newTarea.put(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA,t.getFinalizada());
+        newTarea.put(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS,t.getHorasEstimadas());
+        newTarea.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS,t.getMinutosTrabajados());
+        newTarea.put(ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD,t.getPrioridad().getId());
+        newTarea.put(ProyectoDBMetadata.TablaTareasMetadata.PROYECTO,t.getProyecto().getId());
+        newTarea.put(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE,t.getResponsable().getId());
+        newTarea.put(ProyectoDBMetadata.TablaTareasMetadata.TAREA,t.getDescripcion());
 
+        db.insert(ProyectoDBMetadata.TABLA_TAREAS, null, newTarea);
     }
 
     public void actualizarTarea(Tarea t){
-
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS,t.getHorasEstimadas());
+        contentValues.put(ProyectoDBMetadata.TablaTareasMetadata.PRIORIDAD,t.getPrioridad().getId());
+        contentValues.put(ProyectoDBMetadata.TablaTareasMetadata.PROYECTO,t.getProyecto().getId());
+        contentValues.put(ProyectoDBMetadata.TablaTareasMetadata.RESPONSABLE,t.getResponsable().getId());
+        contentValues.put(ProyectoDBMetadata.TablaTareasMetadata.TAREA,t.getDescripcion());
+        db.update(ProyectoDBMetadata.TABLA_TAREAS, contentValues, "_id="+t.getId(), null);
     }
 
-    public void borrarTarea(Tarea t){
-
+    public void borrarTarea(Integer tareaId){
+        db.delete(ProyectoDBMetadata.TABLA_TAREAS, ProyectoDBMetadata.TablaTareasMetadata._ID + "=" + tareaId, null);
     }
 
     public List<Prioridad> listarPrioridades(){
-        return null;
+        Cursor cursor = db.query(ProyectoDBMetadata.TABLA_PRIORIDAD,null,null,null,null,null,null);
+        List<Prioridad> prioridadList = new ArrayList<>();
+        if(cursor.moveToFirst()){
+            do {
+                Prioridad prioridad = new Prioridad();
+                prioridad.setId(cursor.getInt(0));
+                prioridad.setPrioridad(cursor.getString(1));
+                prioridadList.add(prioridad);
+            } while (cursor.moveToNext());
+        }
+        return prioridadList;
     }
 
     public List<Usuario> listarUsuarios(){
-        return null;
+        Cursor cursor = db.query(ProyectoDBMetadata.TABLA_USUARIOS,null,null,null,null,null,null);
+                List<Usuario> usuarioList = new ArrayList<>();
+        if(cursor.moveToFirst()){
+            do {
+                Usuario usuario = new Usuario();
+                usuario.setId(cursor.getInt(0));
+                usuario.setNombre(cursor.getString(1));
+                usuarioList.add(usuario);
+            } while (cursor.moveToNext());
+        }
+        return usuarioList;
     }
 
     public void finalizar(Integer idTarea){
@@ -97,7 +133,6 @@ public class ProyectoDAO {
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA,1);
         SQLiteDatabase mydb =dbHelper.getWritableDatabase();
         mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_id=?", new String[]{idTarea.toString()});
-        mydb.close();
     }
 
     public List<Tarea> listarDesviosPlanificacion(Boolean soloTerminadas,Integer desvioMaximoMinutos){
@@ -113,6 +148,21 @@ public class ProyectoDAO {
         valores.put(ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS,minutosTrabajados);
         SQLiteDatabase mydb =dbHelper.getWritableDatabase();
         mydb.update(ProyectoDBMetadata.TABLA_TAREAS, valores, "_id=?", new String[]{idTarea.toString()});
-        mydb.close();
     }
+
+    public Tarea getTarea(Integer idTarea){
+
+        String query = "SELECT * FROM " +ProyectoDBMetadata.TABLA_TAREAS + " WHERE _ID = ?";
+        Cursor cursorPry = db.rawQuery(query, new String[] {idTarea.toString()});
+        Tarea tarea = new Tarea();
+        if(cursorPry.moveToFirst()){
+            tarea.setId(cursorPry.getInt(0));
+            tarea.setDescripcion(cursorPry.getString(1));
+            tarea.setHorasEstimadas(cursorPry.getInt(2));
+            tarea.setPrioridad(new Prioridad(cursorPry.getInt(4), ""));
+            tarea.setResponsable(new Usuario(cursorPry.getInt(5),"",""));
+        }
+        return tarea;
+    }
+
 }

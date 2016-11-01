@@ -4,32 +4,73 @@
     android:layout_height="match_parent">
     <TextView
     android:id="@+id/tareaTitulo"
-    android:lines="2"
+    android:lines="1"
+    android:textSize="20sp"
+    android:textStyle="bold"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" />
     <LinearLayout android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Responsable: "
+            android:id="@+id/textResponsableFilaTarea" />
+        <TextView
             android:id="@+id/tareaResponsable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Prioridad: "
+            android:id="@+id/textPrioridadFilaTarea"
+            android:layout_marginLeft="15dp"/>
+        <TextView
             android:id="@+id/tareaPrioridad"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            />
     </LinearLayout>
     <LinearLayout android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Estimados: "
+            android:id="@+id/textMinutosEstimadosFilaTarea"/>
+        <TextView
             android:id="@+id/tareaMinutosAsignados"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Trabajados: "
+            android:id="@+id/textMinutosTrabajadosFilaTarea"
+            android:layout_marginLeft="5dp"/>
+        <TextView
             android:id="@+id/tareaMinutosTrabajados"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"/>
+    </LinearLayout>
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Finalizada: "
+            android:id="@+id/textFinalizadoFilaTarea"
+            android:layout_marginLeft="5dp"/>
         <CheckBox
             android:id="@+id/tareaFinalizada"
             android:layout_width="wrap_content"

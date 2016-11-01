@@ -42,4 +42,8 @@ public class Usuario {
     public void setCorreoElectronico(String correoElectronico) {
         this.correoElectronico = correoElectronico;
     }
+
+    public String toString() {
+        return nombre;
+    }
 }

@@ -1,10 +1,13 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
-import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +16,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.util.HashMap;
@@ -29,11 +33,13 @@ public class TareaCursorAdapter extends CursorAdapter {
     private ProyectoDAO myDao;
     private Context contexto;
     private Map<Integer, Long> mapTiemposInicioTrabajo;
+    private View selectedView;
     public TareaCursorAdapter (Context contexto, Cursor c, ProyectoDAO dao) {
         super(contexto, c, false);
         myDao= dao;
         this.contexto = contexto;
         mapTiemposInicioTrabajo = new HashMap<>();
+
     }
 
     @Override
@@ -70,8 +76,15 @@ public class TareaCursorAdapter extends CursorAdapter {
         String p = cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaPrioridadMetadata.PRIORIDAD_ALIAS));
         prioridad.setText(p);
         responsable.setText(cursor.getString(cursor.getColumnIndex(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO_ALIAS)));
-        finalizada.setChecked(cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA))==1);
+        Boolean isFinalizada = cursor.getInt(cursor.getColumnIndex(ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA))==1;
+        finalizada.setChecked(isFinalizada);
         finalizada.setTextIsSelectable(false);
+
+        //Deshabilito las tareas finalizadas
+        finalizada.setEnabled(!isFinalizada);
+        btnEstado.setEnabled(!isFinalizada);
+        btnEditar.setEnabled(!isFinalizada);
+        btnFinalizar.setEnabled(!isFinalizada);
 
         btnEditar.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
         btnEditar.setOnClickListener(new View.OnClickListener() {
@@ -95,12 +108,12 @@ public class TareaCursorAdapter extends CursorAdapter {
                     public void run() {
                         Log.d("LAB05-MAIN","finalizar tarea : --- "+idTarea);
                         myDao.finalizar(idTarea);
+                        handlerRefresh.sendEmptyMessage(1);
                     }
                 });
                 backGroundUpdate.start();
             }
         });
-
         btnEstado.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
         btnEstado.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,14 +122,58 @@ public class TareaCursorAdapter extends CursorAdapter {
                 if(((ToggleButton)view).isChecked()){
                     mapTiemposInicioTrabajo.put(idTarea,System.currentTimeMillis());
                 }else{
+                    Log.d("LAB05-MAIN","Actualizar minutos trabajados : --- "+idTarea);
                     Long timesMillisFin = System.currentTimeMillis();
                     Long timesMillisInicio = mapTiemposInicioTrabajo.get(idTarea);
                     Long tiempoTrabajado =  minutosAsigandos + (timesMillisFin - timesMillisInicio) / 5000;
                     myDao.actualizarMinutosTrabajados(idTarea,tiempoTrabajado);
-                    //TODO: Refrescar vista
+                    handlerRefresh.sendEmptyMessage(1);
                 }
             }
         });
+
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View view) {
+                selectedView = view;
+                AlertDialog.Builder alert = new android.support.v7.app.AlertDialog.Builder(
+                        context);
+                alert.setTitle("Confirmación!!");
+                alert.setMessage("Desea eliminar la tarea?");
+                alert.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Integer idTarea = (Integer)((Button) selectedView.findViewById(R.id.tareaBtnEditarDatos)).getTag();
+                        Toast.makeText(context, "Se ha eliminado la tarea", Toast.LENGTH_SHORT).show();
+                        myDao.borrarTarea(idTarea);
+                        handlerRefresh.sendEmptyMessage(1);
+                        dialog.dismiss();
+
+                    }
+                });
+                alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                    }
+                });
+                alert.show();
+                return true;
+            }
+        });
+
     }
+
+    Handler handlerRefresh = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message inputMessage) {
+            myDao.open();
+            TareaCursorAdapter.this.changeCursor(myDao.listaTareas(1));
+            myDao.close();
+        }
+    };
+
 }
 
