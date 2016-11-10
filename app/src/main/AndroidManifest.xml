@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AltaTareaActivity"></activity>
+        <activity android:name=".DesviosActivity"></activity>
     </application>
 
 </manifest>

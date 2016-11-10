@@ -42,7 +42,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:id="@+id/txtHorasEstimadas" />
+        android:id="@+id/txtHorasEstimadas"
+        android:maxLength="9"/>
 
     <TextView
         android:layout_width="wrap_content"

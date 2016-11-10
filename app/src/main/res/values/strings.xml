@@ -9,6 +9,7 @@
     <string name="button_positive_dialog_eliminar">SI</string>
     <string name="button_negative_dialog_eliminar">NO</string>
     <string name="msg_tarea_eliminada">Se ha eliminado la tarea</string>
+    <string name="toolbar_desvios">Desvios</string>
 
 
 </resources>

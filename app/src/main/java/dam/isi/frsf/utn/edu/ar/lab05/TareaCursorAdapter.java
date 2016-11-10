@@ -81,7 +81,7 @@ public class TareaCursorAdapter extends CursorAdapter {
         finalizada.setTextIsSelectable(false);
 
         //Deshabilito las tareas finalizadas
-        finalizada.setEnabled(!isFinalizada);
+        finalizada.setEnabled(Boolean.FALSE);
         btnEstado.setEnabled(!isFinalizada);
         btnEditar.setEnabled(!isFinalizada);
         btnFinalizar.setEnabled(!isFinalizada);

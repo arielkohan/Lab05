@@ -2,6 +2,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="dam.isi.frsf.utn.edu.ar.lab05.MainActivity">
+
+    <item
+        android:id="@+id/menuDesvios"
+        android:title="@string/toolbar_desvios"
+        app:showAsAction="ifRoom"/>
+
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

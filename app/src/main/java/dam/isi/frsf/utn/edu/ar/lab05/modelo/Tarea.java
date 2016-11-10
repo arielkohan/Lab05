@@ -90,4 +90,8 @@ public class Tarea {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+
+    public String getString(){
+        return this.descripcion + " \n Horas Estimadas: " + this.horasEstimadas + " Minutos Trabajados: " + this.minutosTrabajados;
+    }
 }

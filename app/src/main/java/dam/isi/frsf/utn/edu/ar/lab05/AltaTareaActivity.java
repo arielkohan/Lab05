@@ -156,6 +156,7 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
                 Toast.makeText(this, getString(R.string.msg_tarea_creada), Toast.LENGTH_SHORT).show();
             }
         }
+
         Intent mainActivity= new Intent(AltaTareaActivity.this,MainActivity.class);
         startActivity(mainActivity);
     }

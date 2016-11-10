@@ -132,7 +132,37 @@ public class ProyectoDAO {
         // retorna una lista de todas las tareas que tardaron más (en exceso) o menos (por defecto)
         // que el tiempo planificado.
         // si la bandera soloTerminadas es true, se busca en las tareas terminadas, sino en todas.
-        return null;
+
+        String finalizada = soloTerminadas ? "1" : "0";
+        Integer desvioMaximoMinutosNegativo = -desvioMaximoMinutos;
+        String query = "SELECT * FROM " +ProyectoDBMetadata.TABLA_TAREAS + " WHERE (( " + ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS + " * 60) - " + ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS + ") " +
+        "BETWEEN " + desvioMaximoMinutosNegativo + " and " + desvioMaximoMinutos;
+
+        // TODO: Este sql por algun motivo no funciona
+        //String query = "SELECT * FROM " +ProyectoDBMetadata.TABLA_TAREAS + " WHERE (( " + ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS + " * 60) - " + ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS + ") " +
+         //       "BETWEEN ? and ?";
+
+        Cursor cursor = null;
+        if(soloTerminadas){
+            query +=  " AND " + ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA + " = ?";
+            cursor = db.rawQuery(query, new String[] {/*Integer.toString(desvioMaximoMinutosNegativo),Integer.toString(desvioMaximoMinutos),*/finalizada});
+        } else {
+            cursor = db.rawQuery(query, new String[] {/*Integer.toString(desvioMaximoMinutosNegativo),Integer.toString(desvioMaximoMinutos)*/});
+        }
+
+        List<Tarea> listTareas = new ArrayList<>();
+        if(cursor.moveToFirst()){
+            do {
+                Tarea tarea = new Tarea();
+                tarea.setId(cursor.getInt(0));
+                tarea.setDescripcion(cursor.getString(1));
+                tarea.setHorasEstimadas(cursor.getInt(2));
+                tarea.setMinutosTrabajados(cursor.getInt(3));
+                listTareas.add(tarea);
+            } while (cursor.moveToNext());
+        }
+
+        return listTareas;
     }
 
     public void actualizarMinutosTrabajados(Integer idTarea, Long minutosTrabajados){
