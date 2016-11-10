@@ -1,5 +1,14 @@
 <resources>
     <string name="app_name">Laboratorio05</string>
     <string name="action_settings">Settings</string>
-    <string name="dialog_eliminar">Elimnar</string>
+    <string name="dialog_eliminar">Eliminar</string>
+    <string name="msg_tarea_creada">La tarea ha sido creada.</string>
+    <string name="msg_tarea_modificada">La tarea ha sido modificada</string>
+    <string name="tittle_dialog_eliminar">Confirmar!</string>
+    <string name="msg_dialog_eliminar">¿Desea eliminar la tarea?</string>
+    <string name="button_positive_dialog_eliminar">SI</string>
+    <string name="button_negative_dialog_eliminar">NO</string>
+    <string name="msg_tarea_eliminada">Se ha eliminado la tarea</string>
+
+
 </resources>

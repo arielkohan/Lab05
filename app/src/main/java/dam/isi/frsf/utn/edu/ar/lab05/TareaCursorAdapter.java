@@ -114,6 +114,7 @@ public class TareaCursorAdapter extends CursorAdapter {
                 backGroundUpdate.start();
             }
         });
+
         btnEstado.setTag(cursor.getInt(cursor.getColumnIndex("_id")));
         btnEstado.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,25 +138,25 @@ public class TareaCursorAdapter extends CursorAdapter {
                 selectedView = view;
                 AlertDialog.Builder alert = new android.support.v7.app.AlertDialog.Builder(
                         context);
-                alert.setTitle("Confirmación!!");
-                alert.setMessage("Desea eliminar la tarea?");
-                alert.setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                alert.setTitle(view.getResources().getString(R.string.tittle_dialog_eliminar));
+                alert.setMessage(view.getResources().getString(R.string.msg_dialog_eliminar));
+                String msgTareaEliminada = view.getResources().getString(R.string.msg_dialog_eliminar);
+                alert.setPositiveButton(view.getResources().getString(R.string.button_positive_dialog_eliminar), new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Integer idTarea = (Integer)((Button) selectedView.findViewById(R.id.tareaBtnEditarDatos)).getTag();
-                        Toast.makeText(context, "Se ha eliminado la tarea", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, context.getString(R.string.msg_tarea_eliminada), Toast.LENGTH_SHORT).show();
                         myDao.borrarTarea(idTarea);
                         handlerRefresh.sendEmptyMessage(1);
                         dialog.dismiss();
 
                     }
                 });
-                alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                alert.setNegativeButton(view.getResources().getString(R.string.button_negative_dialog_eliminar), new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
                         dialog.dismiss();
                     }
                 });
@@ -163,7 +164,6 @@ public class TareaCursorAdapter extends CursorAdapter {
                 return true;
             }
         });
-
     }
 
     Handler handlerRefresh = new Handler(Looper.getMainLooper()) {

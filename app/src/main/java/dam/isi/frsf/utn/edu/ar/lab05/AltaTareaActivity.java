@@ -1,6 +1,8 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,14 +10,18 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.SeekBar;
+
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.Objects;
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
+import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
@@ -27,8 +33,6 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
     List<Prioridad> prioridadesList;
 
     private Spinner spinner;
-    private List<Usuario> usuarioArrayList;
-    private ArrayAdapter<Usuario> spinnerAdapter;
 
     private EditText txtDescripcion;
     private EditText txtHoras;
@@ -60,20 +64,13 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
         prioridadesList = proyectoDAO.listarPrioridades();
 
         spinner = (Spinner) findViewById(R.id.spinner);
-        usuarioArrayList = proyectoDAO.listarUsuarios();
-        ArrayAdapter<Usuario> adapter = new ArrayAdapter<Usuario>(this, android.R.layout.simple_spinner_dropdown_item, usuarioArrayList);
+        SimpleCursorAdapter  adapter = new SimpleCursorAdapter(this,
+                android.R.layout.simple_list_item_1,
+                proyectoDAO.listarUsuarios(),
+                new String[] {ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO},
+                new int[] {android.R.id.text1});
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Usuario usuario = (Usuario) parent.getSelectedItem();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
 
         txtPrioridad = (TextView) findViewById(R.id.txtPrioridad);
 
@@ -103,14 +100,14 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
                 txtDescripcion.setText(tarea.getDescripcion());
                 txtHoras.setText(tarea.getHorasEstimadas().toString());
                 seekBar.setProgress(tarea.getPrioridad().getId() - 1);
-                for(int i = 0; i < adapter.getCount(); i++)
-                {
-                    if (tarea.getResponsable().getId().equals(adapter.getItem(i).getId()))
-                    {
+                for (int i = 0; i < spinner.getCount(); i++) {
+                    Cursor value = (Cursor) spinner.getItemAtPosition(i);
+                    Integer id = value.getInt(value.getColumnIndex("_id"));
+                    if (id.equals(tarea.getResponsable().getId())) {
                         spinner.setSelection(i);
-                        break;
                     }
                 }
+
             } else {
                 seekBar.setProgress(3); // Por defecto la seteo en Baja a la prioridad
             }
@@ -136,8 +133,11 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
         Tarea tarea = new Tarea();
         tarea.setDescripcion((String) txtDescripcion.getText().toString());
         tarea.setHorasEstimadas(Integer.parseInt(txtHoras.getText().toString()));
-        Usuario usuario = (Usuario) spinner.getSelectedItem();
-        tarea.setResponsable(usuario);
+
+        Cursor c=(Cursor) spinner.getSelectedItem();
+        Integer id = c.getInt(c.getColumnIndex("_id"));
+        tarea.setResponsable(new Usuario(id,"",""));
+
         Integer prioridad = seekBar.getProgress() + 1;
         tarea.setPrioridad(new Prioridad(prioridad,""));
         tarea.setProyecto(new Proyecto(1,""));
@@ -148,12 +148,12 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
             if(idTarea != null && !idTarea.equals(0)){
                 tarea.setId(idTarea);
                 proyectoDAO.actualizarTarea(tarea);
-                Toast.makeText(this, "Se ha modificado la tarea", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.msg_tarea_modificada), Toast.LENGTH_SHORT).show();
             } else {
                 tarea.setMinutosTrabajados(0);
                 tarea.setFinalizada(Boolean.FALSE);
                 proyectoDAO.nuevaTarea(tarea);
-                Toast.makeText(this, "Se ha creado la tarea", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.msg_tarea_creada), Toast.LENGTH_SHORT).show();
             }
         }
         Intent mainActivity= new Intent(AltaTareaActivity.this,MainActivity.class);

@@ -113,18 +113,11 @@ public class ProyectoDAO {
         return prioridadList;
     }
 
-    public List<Usuario> listarUsuarios(){
-        Cursor cursor = db.query(ProyectoDBMetadata.TABLA_USUARIOS,null,null,null,null,null,null);
-                List<Usuario> usuarioList = new ArrayList<>();
-        if(cursor.moveToFirst()){
-            do {
-                Usuario usuario = new Usuario();
-                usuario.setId(cursor.getInt(0));
-                usuario.setNombre(cursor.getString(1));
-                usuarioList.add(usuario);
-            } while (cursor.moveToNext());
-        }
-        return usuarioList;
+    public Cursor listarUsuarios(){
+        String sql = "select _ID _id, " + ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO + " from " + ProyectoDBMetadata.TABLA_USUARIOS + " order by " + ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO;
+        Cursor c = db.rawQuery(sql, null);
+        c.moveToFirst();
+        return c;
     }
 
     public void finalizar(Integer idTarea){
