@@ -136,18 +136,14 @@ public class ProyectoDAO {
         String finalizada = soloTerminadas ? "1" : "0";
         Integer desvioMaximoMinutosNegativo = -desvioMaximoMinutos;
         String query = "SELECT * FROM " +ProyectoDBMetadata.TABLA_TAREAS + " WHERE (( " + ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS + " * 60) - " + ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS + ") " +
-        "BETWEEN " + desvioMaximoMinutosNegativo + " and " + desvioMaximoMinutos;
-
-        // TODO: Este sql por algun motivo no funciona
-        //String query = "SELECT * FROM " +ProyectoDBMetadata.TABLA_TAREAS + " WHERE (( " + ProyectoDBMetadata.TablaTareasMetadata.HORAS_PLANIFICADAS + " * 60) - " + ProyectoDBMetadata.TablaTareasMetadata.MINUTOS_TRABAJADOS + ") " +
-         //       "BETWEEN ? and ?";
+                        "BETWEEN " + desvioMaximoMinutosNegativo + " and " + desvioMaximoMinutos;
 
         Cursor cursor = null;
         if(soloTerminadas){
             query +=  " AND " + ProyectoDBMetadata.TablaTareasMetadata.FINALIZADA + " = ?";
-            cursor = db.rawQuery(query, new String[] {/*Integer.toString(desvioMaximoMinutosNegativo),Integer.toString(desvioMaximoMinutos),*/finalizada});
+            cursor = db.rawQuery(query, new String[] {finalizada});
         } else {
-            cursor = db.rawQuery(query, new String[] {/*Integer.toString(desvioMaximoMinutosNegativo),Integer.toString(desvioMaximoMinutos)*/});
+            cursor = db.rawQuery(query, new String[] {});
         }
 
         List<Tarea> listTareas = new ArrayList<>();
