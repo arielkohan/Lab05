@@ -1,24 +1,23 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.SeekBar;
 
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
@@ -27,7 +26,18 @@ import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
+import android.Manifest;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+
+
 public class AltaTareaActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final int PERMISSION_REQUEST_CONTACT =999;
 
     private ProyectoDAO proyectoDAO;
     List<Prioridad> prioridadesList;
@@ -42,7 +52,7 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
 
     private Button btnGuardar;
     private Button btnCancelar;
-
+    private Button btnNuevoResponsable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +70,8 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
         btnGuardar.setOnClickListener(this);
         btnCancelar = (Button) findViewById(R.id.btnCancelar);
         btnCancelar.setOnClickListener(this);
+        btnNuevoResponsable = (Button) findViewById(R.id.btnNuevoResponsable);
+        btnNuevoResponsable.setOnClickListener(this);
 
         prioridadesList = proyectoDAO.listarPrioridades();
 
@@ -107,10 +119,12 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
                         spinner.setSelection(i);
                     }
                 }
-
+                btnNuevoResponsable.setVisibility(View.INVISIBLE);
             } else {
                 seekBar.setProgress(3); // Por defecto la seteo en Baja a la prioridad
+                btnNuevoResponsable.setVisibility(View.VISIBLE);
             }
+
         }
         txtPrioridad.setText(getPrioridad(seekBar.getProgress()));
 
@@ -122,10 +136,81 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
             case R.id.btnGuardar:
                 guardar();
                 break;
+            case R.id.btnNuevoResponsable:
+                nuevoResponsable();
+                break;
             case R.id.btnCancelar:
                 cancelar();
                 break;
         }
+    }
+
+    private void nuevoResponsable() {
+        int permissionCheck = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.READ_CONTACTS);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_CONTACTS)) {
+                showExplanation("Autorizar permisos.", "Para crear un nuevo responsable debe darnos permisos para poder acceder a su lista de contactos.", Manifest.permission.READ_CONTACTS, PERMISSION_REQUEST_CONTACT);
+            } else {
+                requestPermission(Manifest.permission.READ_CONTACTS, PERMISSION_REQUEST_CONTACT);
+            }
+        } else {
+            crearNuevoResponsable();
+        }
+    }
+
+    private void showExplanation(String title,
+                                 String message,
+                                 final String permission,
+                                 final int permissionRequestCode) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        requestPermission(permission, permissionRequestCode);
+                    }
+                });
+        builder.create().show();
+    }
+
+    private void requestPermission(String permissionName, int permissionRequestCode) {
+        ActivityCompat.requestPermissions(this,
+                new String[]{permissionName}, permissionRequestCode);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CONTACT: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    crearNuevoResponsable();
+                } else {
+                    Toast.makeText(this, "Se requieren los permisos para continuar con el alta de un nuevo responsable. ", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
+    }
+
+    private void crearNuevoResponsable(){
+
+        Intent intTarea= new Intent(AltaTareaActivity.this,SeleccionarNuevoResponsableActivity.class);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            Integer idTarea = extras.getInt("ID_TAREA");
+            intTarea.putExtra("ID_TAREA", idTarea);
+        } else {
+            intTarea.putExtra("ID_TAREA", 0);
+            intTarea.putExtra("DESCRIPCION", txtDescripcion.getText().toString());
+            intTarea.putExtra("HORAS_ESTIMADAS", txtHoras.getText().toString());
+            intTarea.putExtra("PRIORIDAD",  seekBar.getProgress());
+        }
+        startActivity(intTarea);
     }
 
     private void guardar() {

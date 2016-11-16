@@ -184,4 +184,19 @@ public class ProyectoDAO {
         return tarea;
     }
 
+    public void nuevoResponsable(Usuario usuario){
+        ContentValues newResponsable = new ContentValues();
+        newResponsable.put(ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO,usuario.getNombre());
+        db.insert(ProyectoDBMetadata.TABLA_USUARIOS, null, newResponsable);
+    }
+
+    public Boolean existeResponsable(String nombre){
+        String query = "SELECT * FROM " + ProyectoDBMetadata.TABLA_USUARIOS + " WHERE " + ProyectoDBMetadata.TablaUsuariosMetadata.USUARIO + " = ?";
+        Cursor cursorPry = db.rawQuery(query, new String[] {nombre});
+        if (cursorPry != null && cursorPry.getCount() > 0){
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+
 }

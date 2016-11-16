@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="dam.isi.frsf.utn.edu.ar.lab05">
 
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,6 +22,7 @@
         </activity>
         <activity android:name=".AltaTareaActivity"></activity>
         <activity android:name=".DesviosActivity"></activity>
+        <activity android:name=".SeleccionarNuevoResponsableActivity"></activity>
     </application>
 
 </manifest>
