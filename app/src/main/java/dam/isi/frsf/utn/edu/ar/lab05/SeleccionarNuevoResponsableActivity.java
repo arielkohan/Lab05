@@ -1,32 +1,17 @@
 package dam.isi.frsf.utn.edu.ar.lab05;
 
-import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.List;
-
+import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoApiRest;
 import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDAO;
-import dam.isi.frsf.utn.edu.ar.lab05.dao.ProyectoDBMetadata;
-import dam.isi.frsf.utn.edu.ar.lab05.modelo.Prioridad;
-import dam.isi.frsf.utn.edu.ar.lab05.modelo.Proyecto;
-import dam.isi.frsf.utn.edu.ar.lab05.modelo.Tarea;
 import dam.isi.frsf.utn.edu.ar.lab05.modelo.Usuario;
 
 
@@ -77,12 +62,19 @@ public class SeleccionarNuevoResponsableActivity extends AppCompatActivity imple
 
         Cursor c=(Cursor) spinner.getSelectedItem();
         String nombre = c.getString(c.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+
+        ProyectoApiRest proyectoApiRest = new ProyectoApiRest();
+
         if(!proyectoDAO.existeResponsable(nombre)){
+            //Guardo el usuario en la base
             Usuario usuario = new Usuario();
             usuario.setNombre(nombre);
             proyectoDAO.nuevoResponsable(usuario);
-        }
 
+            //Guardo el usuario en la base remota
+            proyectoApiRest.guardarUsuario(usuario);
+
+        }
 
         Intent intTarea= new Intent(SeleccionarNuevoResponsableActivity.this,AltaTareaActivity.class);
 

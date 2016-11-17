@@ -9,7 +9,11 @@
     <string name="button_positive_dialog_eliminar">SI</string>
     <string name="button_negative_dialog_eliminar">NO</string>
     <string name="msg_tarea_eliminada">Se ha eliminado la tarea</string>
+    <string name="msg_dialog_eliminar_proyecto">¿Desea eliminar el proyecto?</string>
+    <string name="msg_proyecto_eliminado">Se ha eliminado el proyecto</string>
     <string name="toolbar_desvios">Desvios</string>
-
+    <string name="action_proyecto">Proyectos</string>
+    <string name="msg_proyecto_creada">El proyecto ha sido creado.</string>
+    <string name="msg_proyecto_modificada">El proyecto ha sido modificado</string>
 
 </resources>
