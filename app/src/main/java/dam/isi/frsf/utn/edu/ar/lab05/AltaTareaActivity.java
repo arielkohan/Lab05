@@ -215,35 +215,41 @@ public class AltaTareaActivity extends AppCompatActivity implements View.OnClick
 
     private void guardar() {
 
-        Tarea tarea = new Tarea();
-        tarea.setDescripcion((String) txtDescripcion.getText().toString());
-        tarea.setHorasEstimadas(Integer.parseInt(txtHoras.getText().toString()));
+        if(txtDescripcion.getText() == null || txtDescripcion.getText().toString().trim().isEmpty()){
+            Toast.makeText(this, R.string.msg_ingrese_descripcion, Toast.LENGTH_SHORT).show();
+        } else if(txtHoras.getText() == null || txtHoras.getText().toString().trim().isEmpty()){
+            Toast.makeText(this, R.string.msg_ingrese_horas_estimadas, Toast.LENGTH_SHORT).show();
+        } else {
+            Tarea tarea = new Tarea();
+            tarea.setDescripcion((String) txtDescripcion.getText().toString());
+            tarea.setHorasEstimadas(Integer.parseInt(txtHoras.getText().toString()));
 
-        Cursor c=(Cursor) spinner.getSelectedItem();
-        Integer id = c.getInt(c.getColumnIndex("_id"));
-        tarea.setResponsable(new Usuario(id,"",""));
+            Cursor c=(Cursor) spinner.getSelectedItem();
+            Integer id = c.getInt(c.getColumnIndex("_id"));
+            tarea.setResponsable(new Usuario(id,"",""));
 
-        Integer prioridad = seekBar.getProgress() + 1;
-        tarea.setPrioridad(new Prioridad(prioridad,""));
-        tarea.setProyecto(new Proyecto(1,""));
+            Integer prioridad = seekBar.getProgress() + 1;
+            tarea.setPrioridad(new Prioridad(prioridad,""));
+            tarea.setProyecto(new Proyecto(1,""));
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            Integer idTarea = extras.getInt("ID_TAREA");
-            if(idTarea != null && !idTarea.equals(0)){
-                tarea.setId(idTarea);
-                proyectoDAO.actualizarTarea(tarea);
-                Toast.makeText(this, getString(R.string.msg_tarea_modificada), Toast.LENGTH_SHORT).show();
-            } else {
-                tarea.setMinutosTrabajados(0);
-                tarea.setFinalizada(Boolean.FALSE);
-                proyectoDAO.nuevaTarea(tarea);
-                Toast.makeText(this, getString(R.string.msg_tarea_creada), Toast.LENGTH_SHORT).show();
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                Integer idTarea = extras.getInt("ID_TAREA");
+                if(idTarea != null && !idTarea.equals(0)){
+                    tarea.setId(idTarea);
+                    proyectoDAO.actualizarTarea(tarea);
+                    Toast.makeText(this, getString(R.string.msg_tarea_modificada), Toast.LENGTH_SHORT).show();
+                } else {
+                    tarea.setMinutosTrabajados(0);
+                    tarea.setFinalizada(Boolean.FALSE);
+                    proyectoDAO.nuevaTarea(tarea);
+                    Toast.makeText(this, getString(R.string.msg_tarea_creada), Toast.LENGTH_SHORT).show();
+                }
             }
-        }
 
-        Intent mainActivity= new Intent(AltaTareaActivity.this,MainActivity.class);
-        startActivity(mainActivity);
+            Intent mainActivity= new Intent(AltaTareaActivity.this,MainActivity.class);
+            startActivity(mainActivity);
+        }
     }
 
     private void cancelar() {

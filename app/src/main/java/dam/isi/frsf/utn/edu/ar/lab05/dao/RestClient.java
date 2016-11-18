@@ -22,13 +22,13 @@ public class RestClient {
     private final String IP_SERVER = "192.168.0.7";
     private final String PORT_SERVER = "4000";
 
-    public JSONObject getById(Integer id,String path) {
+    public JSONObject getById(Integer id, String path) {
         JSONObject resultado = null;
-        HttpURLConnection urlConnection=null;
+        HttpURLConnection urlConnection = null;
         try {
-            URL url = new URL("http://"+IP_SERVER+":"+PORT_SERVER+"/"+path+"/"+id);
+            URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path + "/" + id);
 
-            urlConnection= (HttpURLConnection) url.openConnection();
+            urlConnection = (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             InputStreamReader isw = new InputStreamReader(in);
             StringBuilder sb = new StringBuilder();
@@ -40,22 +40,20 @@ public class RestClient {
                 data = isw.read();
             }
             resultado = new JSONObject(sb.toString());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            if(urlConnection!=null) urlConnection.disconnect();
+        } finally {
+            if (urlConnection != null) urlConnection.disconnect();
         }
         return resultado;
     }
 
     public JSONArray getByAll(String path) {
         JSONArray resultado = null;
-        HttpURLConnection urlConnection=null;
+        HttpURLConnection urlConnection = null;
         try {
-            URL url = new URL("http://"+IP_SERVER+":"+PORT_SERVER+"/"+path);
-            urlConnection= (HttpURLConnection) url.openConnection();
+            URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path);
+            urlConnection = (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             InputStreamReader isw = new InputStreamReader(in);
             StringBuilder sb = new StringBuilder();
@@ -67,24 +65,21 @@ public class RestClient {
                 data = isw.read();
             }
             resultado = new JSONArray(sb.toString());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            if(urlConnection!=null) urlConnection.disconnect();
+        } finally {
+            if (urlConnection != null) urlConnection.disconnect();
         }
         return resultado;
     }
 
-    public void crear(JSONObject objeto,String path) {
-        try{
-            String str= objeto.toString();
-            byte[] data=str.getBytes("UTF-8");
-            crearHttpConnectionParaCrearOActualizar(data,"POST",path);
-        }
-        catch(Exception e){
-          e.printStackTrace();
+    public void crear(JSONObject objeto, String path) {
+        try {
+            String str = objeto.toString();
+            byte[] data = str.getBytes("UTF-8");
+            httpConnectionParaCrearOActualizar(data, "POST", path);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -92,33 +87,31 @@ public class RestClient {
         try {
             String str = objeto.toString();
             byte[] data = str.getBytes("UTF-8");
-            crearHttpConnectionParaCrearOActualizar(data, "PUT", path);
-        }
-        catch(Exception e){
+            httpConnectionParaCrearOActualizar(data, "PUT", path);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void borrar(Integer id,String path) {
+    public void borrar(Integer id, String path) {
         try {
-            path=path+"/"+id;
-            crearHttpConnectionParaBusquedaOEliminacion("DELETE", path);
-        }
-        catch(Exception e){
+            path = path + "/" + id;
+            httpConnectionParaBusquedaOEliminacion("DELETE", path);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void crearHttpConnectionParaCrearOActualizar(byte[] datosAEnviar, String topoRequest, String path){
-        if(topoRequest.equals("POST") || topoRequest.equals("PUT")){
-            HttpURLConnection urlConnection=null;
-            try{
-                URL url = new URL("http://"+IP_SERVER+":"+PORT_SERVER+"/"+path);
+    private void httpConnectionParaCrearOActualizar(byte[] datosAEnviar, String tipoRequest, String path) {
+        if (tipoRequest.equals("POST") || tipoRequest.equals("PUT")) {
+            HttpURLConnection urlConnection = null;
+            try {
+                URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path);
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
-                urlConnection.setRequestMethod(topoRequest);
+                urlConnection.setRequestMethod(tipoRequest);
                 urlConnection.setFixedLengthStreamingMode(datosAEnviar.length);
-                urlConnection.setRequestProperty("Content-Type","application/json");
+                urlConnection.setRequestProperty("Content-Type", "application/json");
 
                 DataOutputStream flujoSalida = new DataOutputStream(urlConnection.getOutputStream());
                 flujoSalida.write(datosAEnviar);
@@ -126,32 +119,32 @@ public class RestClient {
                 flujoSalida.close();
 
                 urlConnection.getResponseMessage();
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-            }
-            finally{
-                if(urlConnection!=null){ urlConnection.disconnect();}
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
             }
         }
     }
 
-    private void crearHttpConnectionParaBusquedaOEliminacion(String topoRequest, String path) {
-        if(topoRequest.equals("GET") || topoRequest.equals("DELETE")){
-            HttpURLConnection urlConnection=null;
-            try{
-                URL url = new URL("http://"+IP_SERVER+":"+PORT_SERVER+"/"+path);
+    private void httpConnectionParaBusquedaOEliminacion(String tipoRequest, String path) {
+        if (tipoRequest.equals("GET") || tipoRequest.equals("DELETE")) {
+            HttpURLConnection urlConnection = null;
+            try {
+                URL url = new URL("http://" + IP_SERVER + ":" + PORT_SERVER + "/" + path);
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
-                urlConnection.setRequestMethod(topoRequest);
-                urlConnection.setRequestProperty("Content-Type","application/json");
+                urlConnection.setRequestMethod(tipoRequest);
+                urlConnection.setRequestProperty("Content-Type", "application/json");
                 urlConnection.getResponseMessage();
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-            }
-            finally{
-                if(urlConnection!=null){ urlConnection.disconnect();}
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
             }
         }
     }

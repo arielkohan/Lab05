@@ -58,8 +58,8 @@ public class AltaProyectoActivity extends AppCompatActivity implements View.OnCl
 
 
     private void guardar() {
-        if(txtTitulo.getText() == null || "".equals(txtTitulo.getText().toString().trim())){
-            Toast.makeText(this, "Debe ingresa un nombre al proyecto.", Toast.LENGTH_SHORT).show();
+        if(txtTitulo.getText() == null || txtTitulo.getText().toString().trim().isEmpty()){
+            Toast.makeText(this, "Debe ingresa un nombre.", Toast.LENGTH_SHORT).show();
         } else {
             Proyecto proyecto = new Proyecto();
             proyecto.setNombre((String) txtTitulo.getText().toString());

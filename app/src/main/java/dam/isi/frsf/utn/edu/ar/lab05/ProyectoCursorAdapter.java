@@ -63,6 +63,7 @@ public class ProyectoCursorAdapter extends CursorAdapter {
                 List<Tarea> listTareas = ProyectoApiRest.getInstance().getTareas(idProyecto);
                 for(Tarea tarea: listTareas){
                     Log.i("Tarea ->",tarea.getDescripcion() + " Horas Estimadas: " + tarea.getHorasEstimadas() + " Minutos Trabajados: " + tarea.getMinutosTrabajados());
+                    Toast.makeText(context, tarea.getDescripcion() + " Horas Estimadas: " + tarea.getHorasEstimadas() + " Minutos Trabajados: " + tarea.getMinutosTrabajados(), Toast.LENGTH_SHORT).show();
                 }
 
 

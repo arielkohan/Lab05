@@ -15,5 +15,7 @@
     <string name="action_proyecto">Proyectos</string>
     <string name="msg_proyecto_creada">El proyecto ha sido creado.</string>
     <string name="msg_proyecto_modificada">El proyecto ha sido modificado</string>
-
+    <string name="msg_ingrese_minutos_desvio">Ingrese los minutos de desvio.</string>
+    <string name="msg_ingrese_descripcion">Debe ingresa una descripción.</string>
+    <string name="msg_ingrese_horas_estimadas">Debe ingresa horas estimadas.</string>
 </resources>

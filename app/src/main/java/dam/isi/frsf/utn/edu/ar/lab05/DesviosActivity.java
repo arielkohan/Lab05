@@ -50,7 +50,7 @@ public class DesviosActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 if (txtMinutosDesvio.getText().toString().isEmpty()) {
-                    Toast.makeText(DesviosActivity.this, "Ingrese los minutos de desvio.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DesviosActivity.this, R.string.msg_ingrese_minutos_desvio , Toast.LENGTH_SHORT).show();
                 } else {
                     Integer minutosDESVIO = Integer.parseInt(txtMinutosDesvio.getText().toString());
                     Boolean finalizada = finalizadaCheckBox.isChecked();
